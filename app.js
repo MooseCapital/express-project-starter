@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors')
+const cron = require('node-cron');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const testRouter = require('./routes/testRouter');
@@ -42,8 +43,8 @@ app.use(helmet());
 
 //if we want to customize rate limits on routes, put the routes above the limiter middleware, otherwise leave below for main limiter
 app.use(mainLimiter)
-app.use('/test', testRouter);
 app.use('/', indexRouter);
+app.use('/test', testRouter);
 app.use('/users', usersRouter);
 
 

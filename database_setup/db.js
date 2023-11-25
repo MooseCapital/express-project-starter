@@ -1,7 +1,5 @@
 const knex = require('knex')
 const knexfile = require('./knexfile');
-const {config} = require("dotenv");
-require('dotenv').config();
 
-const db = knex(knexfile.production);
+const db = knex(knexfile.database_config);
 module.exports = db;
