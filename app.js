@@ -4,13 +4,12 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors')
-const cron = require('node-cron');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const testRouter = require('./routes/testRouter');
 const {mainLimiter, testLimiter} = require("./rateLimits");
 const helmet = require('helmet');
-
+const cronJobs = require('./cronJobs');
 const app = express();
 
 
@@ -38,7 +37,7 @@ app.use(helmet());
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 } */
 //cors not enabled by default
-// app.use(cors(corsOptions))
+app.use(cors())
 
 
 //if we want to customize rate limits on routes, put the routes above the limiter middleware, otherwise leave below for main limiter
@@ -52,6 +51,10 @@ app.use('/users', usersRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+//run cron jobs
+cronJobs.initScheduledJobs();
+
 
 // error handler
 app.use(function(err, req, res, next) {
