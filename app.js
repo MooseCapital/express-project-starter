@@ -41,6 +41,12 @@ app.use(cors())
 
 
 //if we want to customize rate limits on routes, put the routes above the limiter middleware, otherwise leave below for main limiter
+//when using a limiter it goes by ip, if we use a proxy it can't get the users direct ip unless we tell express how many proxies are in front of it
+//so we must try our ip route in /test/ip -> this tells our ip, if we don't see it then we know were on a proxy and we should set 'trust proxy' below and test again
+
+//app.set('trust proxy', number of proxies)
+
+app.set('trust proxy', 1);
 app.use(mainLimiter)
 app.use('/', indexRouter);
 app.use('/test', testRouter);
