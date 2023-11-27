@@ -2,9 +2,9 @@
 --connect to psql or run with db connected
 
 --in psql: *** must type in passwords below
-create role adminmooselocal login createdb password 'i7Vp0H0bArQrwZvMbDfX';
-create role safemoose login password 'U26zHJ9B0Pl9IQVzDPag';
-create role readonlymoose login password 'p6pb0VxYCQ69TpC0Fs4S';
+create role adminmooselocal login createdb password 'same_pass_here';
+create role safemoose login password 'same_pass_here';
+create role readonlymoose login password 'same_pass_here';
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 create database maindb owner adminmooselocal encoding "utf8";
@@ -51,7 +51,7 @@ alter default privileges for role adminmooselocal in schema public
 
 --normal user
 alter default privileges for role safemoose in schema public
-    grant select, insert, update on tables to safemoose;
+    grant select, insert, update, references, trigger on tables to safemoose;
 
 alter default privileges for role safemoose in schema public
     grant usage, select on sequences to safemoose;

@@ -41,7 +41,8 @@
             grant select on tables to readonlymoose;
 
 
-
+    6) we may or may not backup the database with role passwords stored, so we need to set them on restore
+        ALTER ROLE username WITH PASSWORD 'password';
 
 
 
