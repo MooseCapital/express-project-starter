@@ -1,4 +1,7 @@
 const cron = require('node-cron');
+const axios = require('axios');
+
+//with axios, or fetch, we can call our own apis on a set schedule
 
 const initScheduledJobs = () => {
       const testJob = cron.schedule(" */5 * * * *", () => {
