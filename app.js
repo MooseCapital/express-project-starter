@@ -17,6 +17,10 @@ const app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+// this is so the express-rate-limit knows which ip is hitting it, if we have a proxy in front of our request.. we usually do
+  // then the rate limiter will get the proxy, not our ip, so it can't track us!, we need to specify the number of proxies below
+  // since we self host on coolify, there is usually 1 proxy in front, we can test this with
+  // /test/ip route we created for this
 app.set('trust proxy', 1);
 
 
