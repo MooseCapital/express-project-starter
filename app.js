@@ -23,6 +23,26 @@ app.set('view engine', 'ejs');
   // /test/ip route we created for this
 app.set('trust proxy', 1);
 
+const validApiKeys = [process.env.API_KEY];
+
+// Middleware for validating API keys. put API_KEY in .env file. this is one we generate for simple testing
+function validateApiKey(req, res, next) {
+    const apiKey = req.header('x-api-key');
+    if (!apiKey || !validApiKeys.includes(apiKey)) {
+        return res.status(403).json({ error: 'Unauthorized' });
+    }
+    next();
+}
+// axios request with api key above look something like this
+  /*
+  const URL = `${process.env.API_LINK}/lottery/scrapeLottery`;
+  const headers = {
+      'x-api-key': process.env.API_KEY
+  }
+  await axios.get(URL, {headers})
+  */
+
+
 
 //logs request to server
 if (app.get('env') === 'production') {
@@ -37,12 +57,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(helmet());
 
 //cors settings
-/* corsOptions = {
+corsOptions = {
   origin: ['http://localhost:5173','http://localhost:4173'],
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-} */
+}
 //cors not enabled by default
-app.use(cors())
+app.use(cors(corsOptions))
 
 
 //if we want to customize rate limits on routes, put the routes above the limiter middleware, otherwise leave below for main limiter
@@ -52,9 +72,9 @@ app.use(cors())
 //app.set('trust proxy', number of proxies)
 
 app.use(mainLimiter)
-app.use('/', indexRouter);
-app.use('/test', testRouter);
-app.use('/users', usersRouter);
+app.use('/',validateApiKey, indexRouter);
+app.use('/test',validateApiKey, testRouter);
+app.use('/users',validateApiKey, usersRouter);
 
 
 // catch 404 and forward to error handler
