@@ -6,8 +6,8 @@ const helloWorld = (async (req, res) => {
         return res.status(200).json({msg: 'hello world'})
     }
     catch (e) {
-        console.log(e)
-        return res.status(500).json({error: 'could not fetch'})
+        console.error('Error getting home:', e);
+        return res.status(500).json({error: 'could not get data'})
     }
 })
 

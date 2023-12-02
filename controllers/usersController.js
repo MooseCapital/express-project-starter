@@ -12,9 +12,9 @@ const getPeople = (async (req, res) => {
         return res.status(200).json(data)
     }
     catch (e) {
-        console.log(e)
+        console.error('Error getting people:', e);
         //pick own status code and error specific to request!
-        return res.status(500).json({error: 'could not fetch'})
+        return res.status(500).json({error: 'could not get data'})
     }
 })
 
@@ -32,19 +32,18 @@ const getPerson = (async (req, res) => {
 
     }
     catch (e) {
-        console.log(e)
+        console.error('Error getting person:', e);
         //pick own status code and error specific to request!
-        return res.status(500).json({error: 'could not fetch'})
+        return res.status(500).json({error: 'could not get data'})
 
     }
 })
 const test = (async (req, res) => {
     try {
-        console.log(req.ip)
-        return res.status(200).json({msg: 'users test response'})
+        return res.status(200).json({msg: 'user test response'})
     }
     catch (e) {
-        console.log(e)
+        console.error('Error getting user test:', e);
         return res.status(500).json({error: 'could not fetch'})
     }
 })

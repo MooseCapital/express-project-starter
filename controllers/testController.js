@@ -14,19 +14,18 @@ const getPage = (async (req, res) => {
         return res.status(200).json(data)
     }
     catch (e) {
-        console.log(e)
-        return res.status(500).json({error: 'could not fetch'})
+        console.error('Error getting page:', e);
+        return res.status(500).json({error: 'could not get data'})
     }
 })
 
 const test = (async (req, res) => {
     try {
-        console.log(req.ip)
         return res.status(200).json({msg: 'testController response'})
     }
     catch (e) {
-        console.log(e)
-        return res.status(500).json({error: 'could not fetch'})
+        console.error('Error getting test:', e);
+        return res.status(500).json({error: 'could not get data'})
     }
 })
 
@@ -45,11 +44,11 @@ const ip = (async (req, res) => {
           // if the nodejs server is called directly, bypassing the trusted proxies,
           // then 'trust proxy' ignores x-forwarded-for headers and
           // sets req.ip to the remote client ip address
-
+            console.log({"ip": ip, "protocol": req.protocol, "headers": req.headers['x-forwarded-for']})
              res.json({"ip": ip, "protocol": req.protocol, "headers": req.headers['x-forwarded-for']});
         } catch (e) {
-          console.log(e)
-          return res.status(500).json({error:'could not fetch'})
+          console.error('Error getting ip:', e);
+          return res.status(500).json({error:'could not get data'})
         }
 })
 
