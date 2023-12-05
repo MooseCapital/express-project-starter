@@ -35,15 +35,6 @@ const ip = (async (req, res) => {
           if (ip.substr(0,7) === '::ffff:') { // fix for if you have both ipv4 and ipv6
             ip = ip.substr(7);
           }
-          // req.ip and req.protocol are now set to ip and protocol of the client, not the ip and protocol of the reverse proxy server
-          // req.headers['x-forwarded-for'] is not changed
-          // req.headers['x-forwarded-for'] contains more than 1 forwarder when
-          // there are more forwarders between the client and nodejs.
-          // Forwarders can also be spoofed by the client, but
-          // app.set('trust proxy') selects the correct client ip from the list
-          // if the nodejs server is called directly, bypassing the trusted proxies,
-          // then 'trust proxy' ignores x-forwarded-for headers and
-          // sets req.ip to the remote client ip address
             console.log({"ip": ip, "protocol": req.protocol, "headers": req.headers['x-forwarded-for']})
              res.json({"ip": ip, "protocol": req.protocol, "headers": req.headers['x-forwarded-for']});
         } catch (e) {
@@ -52,7 +43,75 @@ const ip = (async (req, res) => {
         }
 })
 
-module.exports = {getPage, test, ip}
+const transactionTest = (async (req, res) => {
+    const numId = Number(req.params.id);
+    const id = req.params.id;
+    const q = req.query; //normalize with q.toLowerCase()
+    if (!validator.isUUID(id, [4])) {
+        return res.status(400).json({
+            error: "Invalid Id"
+        });
+    }
+
+    const trxProvider = knex.transactionProvider();
+    const trx = await trxProvider();
+    try {
+        //pick what column specifically * to return, to save data we get from the database means saving $$
+        const data = await trx('people').where({id: id}).update({favorite_color: 'yellow'}).returning('id');
+        if (data === 0 || data.length === 0) {
+            return res.status(404).json({msg: 'No data found to update'});
+        }
+        await trx.commit();
+        console.log(data[0]);
+        return res.status(200).json(data[0]);
+
+    }
+    catch (e) {
+        console.error(e)
+        await trx.rollback();
+        return res.status(500).json({Error: 'Internal server error'})
+    }
+})
+
+
+
+
+const { S3Client, CreateBucketCommand, PutObjectCommand, GetObjectCommand} = require('@aws-sdk/client-s3');
+const {S3_ACCESS_KEY_ID, S3_SECRET_APPLICATION_KEY, S3_ENDPOINT, S3_BUCKET_NAME} = process.env;
+
+const s3 = new S3Client({
+    credentials: {
+        accessKeyId: S3_ACCESS_KEY_ID,
+        secretAccessKey: S3_SECRET_APPLICATION_KEY
+    },
+      endpoint: S3_ENDPOINT,
+      region: 'us-east-005'
+});
+
+const streamFile = (async (req, res) => {
+
+    try {
+        const fileResponse = await s3.send(new
+        GetObjectCommand({
+            Bucket: S3_BUCKET_NAME, // bucket name
+            Key: req.params.filename  // file name
+        }));
+
+        const fileStream = fileResponse.Body;
+        res.setHeader('Content-Type', 'application/pdf');
+        // res.setHeader('Content-Disposition', 'inline; filename=wy-llc.pdf'); // Adjust filename as needed
+        // res.setHeader('Content-Length', fileResponse.ContentLength || '0');
+
+        // pipe the fileStream to the response
+         fileStream.pipe(res);
+    }
+    catch (e) {
+        console.error('An error occurred', e);
+        return res.status(500).json({Error: `Internal server error, ${e}`})
+    }
+})
+
+module.exports = {getPage, test, ip, transactionTest, streamFile}
 
 
 
