@@ -38,18 +38,10 @@ const getPerson = (async (req, res) => {
 
     }
 })
-const test = (async (req, res) => {
-    try {
-        return res.status(200).json({msg: 'user test response'})
-    }
-    catch (e) {
-        console.error('Error getting user test:', e);
-        return res.status(500).json({error: 'could not fetch'})
-    }
-})
 
 
-module.exports = {getPeople, getPerson, test}
+
+module.exports = {getPeople, getPerson}
 
 
 

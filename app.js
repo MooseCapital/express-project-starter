@@ -72,9 +72,9 @@ app.use(cors(corsOptions))
 //app.set('trust proxy', number of proxies)
 
 app.use(mainLimiter)
-app.use('/',validateApiKey, indexRouter);
-app.use('/test',validateApiKey, testRouter);
-app.use('/users',validateApiKey, usersRouter);
+app.use('/api', indexRouter);
+app.use('/api/test',validateApiKey, testRouter);
+app.use('/api/users',validateApiKey, usersRouter);
 
 
 // catch 404 and forward to error handler
